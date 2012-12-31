@@ -1,141 +1,151 @@
-<p>I love [redis](http://redis.io). It's blazingly fast and wonderfully atomic.</p>
-<p>Back in December 2010 I converted the database behind [World of Solitaire](http://worldofsolitaire.com) to redis 2.2</p>
+<p>I love <a href="http://redis.io">redis</a>. It's blazingly fast and wonderfully atomic.</p>
+<p>Back in December 2010 I converted the database behind <a href="http://worldofsolitaire.com">World of Solitaire</a> to redis 2.2</p>
 <p>It's currently holding over 21 million keys and handling over 1,100 commands per second.</p>
 <p>Over the past 9 months RAM usage has slowly been increasing as more and more keys are inserted. A few days ago I realized I was very short on available RAM and had to do something sooner, rather than later.</p>
-<p>Before throwing more RAM into the box, I decided to try updating to redis 2.4 as I had read a [blog post](http://antirez.com/post/everything-about-redis-24) that it was more efficient at storing sorted sets.</p>
+<p>Before throwing more RAM into the box, I decided to try updating to redis 2.4 as I had read a <a href="http://antirez.com/post/everything-about-redis-24">blog post</a> that it was more efficient at storing sorted sets.</p>
 <p>I was SHOCKED at the reduction in RAM usage:</p>
 <div id="ramReduction"></div>
-{% chart %}
-{
-    chart :
-    {
-        renderTo : "ramReduction",
-        defaultSeriesType : "column",
-        backgroundColor : "transparent"
-    },
-    credits : { enabled : false },
-    title : null,
-    xAxis : { categories : [ "redis 2.2", "redis 2.4" ] },
-    yAxis : { title : { text : "RAM Usage" } },
-    legend : { enabled : false },
-    tooltip :
-    {
-        formatter : function()
-        {
-            return "<b>" + this.x + "</b><br/>" + "RAM Usage: " + this.y + "GB";
-        }
-    },
-    series :
-    [{
-        data : [ 11.7, 3.67 ],
-        dataLabels :
-        {
-            enabled : true,
-            formatter : function()
-            {
-                return this.y + "GB";
-            },
-            style : { fontWeight : "bold" }
-        }
-    }]
-}
-{% endchart %}
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "ramReduction",
+					defaultSeriesType : "column",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : null,
+				xAxis : { categories : [ "redis 2.2", "redis 2.4" ] },
+				yAxis : { title : { text : "RAM Usage" } },
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.x + "</b><br/>" + "RAM Usage: " + this.y + "GB";
+					}
+				},
+				series :
+				[{
+					data : [ 11.7, 3.67 ],
+					dataLabels :
+					{
+						enabled : true,
+						formatter : function()
+						{
+							return this.y + "GB";
+						},
+						style : { fontWeight : "bold" }
+					}
+				}]
+			});
+	});
+</script>
 <p>It was such a dramatic reduction, I questioned whether or not data had been lost in some way.</p>
 <p>Comparing the same dump in both 2.2 and 2.4 yielded the exact same key count: 21,085,659</p>
 <p>Am I really storing that many sorted sets? I decided to write some code to see how many keys of each type I was storing and what the average length of each type was.</p>
 <p>My first attempt in node.js ended pretty quickly with a memory allocation fault with node.js, so I decided to code it in C.</p>
 <p>Data type breakdown:</p>
 <div id="dataTypeMakeup"></div>
-{% chart %}
-{
-    chart :
-    {
-         renderTo : 'dataTypeMakeup',
-         plotBackgroundColor : null,
-         plotBorderWidth : null,
-         plotShadow : false,
-         backgroundColor : "transparent"
-    },
-    credits : { enabled : false },
-    title : null,
-    tooltip :
-    {
-        formatter: function()
-        {
-            return "<b>"+ this.point.name +"</b>: "+ Highcharts.numberFormat(this.y, 0);
-        }
-    },
-    plotOptions :
-    {
-        pie :
-        {
-            allowPointSelect : true,
-            cursor : 'pointer',
-            dataLabels :
-            {
-                enabled : true,
-                color: '#000000',
-                connectorColor: '#000000',
-                formatter: function()
-                {
-                    return "<b>"+ this.point.name +"</b><br/>"+ Highcharts.numberFormat(this.y, 0);
-                }
-            }
-         }
-      },
-        series: [{
-         type: 'pie',
-         name: 'Browser share',
-         data: [
-            ['Hashes', 10742038],
-            {
-               name: 'Sorted Sets',
-               y: 10343620,
-               sliced : true,
-               selected : true
-            }
-         ]
-      }]
-   }
-{% endchart %}
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					 renderTo : 'dataTypeMakeup',
+					 plotBackgroundColor : null,
+					 plotBorderWidth : null,
+					 plotShadow : false,
+					 backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : null,
+				tooltip :
+				{
+					formatter: function()
+					{
+						return "<b>"+ this.point.name +"</b>: "+ Highcharts.numberFormat(this.y, 0);
+					}
+				},
+				plotOptions :
+				{
+					pie :
+					{
+						allowPointSelect : true,
+						cursor : 'pointer',
+						dataLabels :
+						{
+							enabled : true,
+							color: '#000000',
+							connectorColor: '#000000',
+							formatter: function()
+							{
+								return "<b>"+ this.point.name +"</b><br/>"+ Highcharts.numberFormat(this.y, 0);
+							}
+						}
+					}
+				},
+					series: [{
+					 type: 'pie',
+					 name: 'Browser share',
+					 data: [
+						['Hashes', 10742038],
+						{
+							name: 'Sorted Sets',
+							y: 10343620,
+							sliced : true,
+							selected : true
+						}
+					 ]
+				}]
+			});
+	});
+</script>
 <p>Average Length:</p>
 <div id="typeAverageLength"></div>
-{% chart %}
-{
-    chart :
-    {
-        renderTo : "typeAverageLength",
-        defaultSeriesType : "bar",
-        backgroundColor : "transparent"
-    },
-    credits : { enabled : false },
-    title : null,
-    xAxis : { categories : [ "Sorted Sets", "Hashes" ] },
-    yAxis : { title : { text : "Average Length" } },
-    legend : { enabled : false },
-    tooltip :
-    {
-        formatter : function()
-        {
-            return "<b>" + this.x + "</b><br/>" + "Average Length: " + this.y;
-        }
-    },
-    series :
-    [{
-        data : [ 1.5, 5.13 ],
-        dataLabels :
-        {
-            enabled : true,
-            formatter : function()
-            {
-                return this.y;
-            },
-            style : { fontWeight : "bold" }
-        }
-    }]
-}
-{% endchart %}
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "typeAverageLength",
+					defaultSeriesType : "bar",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : null,
+				xAxis : { categories : [ "Sorted Sets", "Hashes" ] },
+				yAxis : { title : { text : "Average Length" } },
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.x + "</b><br/>" + "Average Length: " + this.y;
+					}
+				},
+				series :
+				[{
+					data : [ 1.5, 5.13 ],
+					dataLabels :
+					{
+						enabled : true,
+						formatter : function()
+						{
+							return this.y;
+						},
+						style : { fontWeight : "bold" }
+					}
+				}]
+			});
+	});
+</script>
 <p>Over 10 million sorted sets with only 1.5 entries on average per set.</p>
 <p>Thanks to redis 2.4, I won't have to worry about RAM for a while :)</p>
 <p>Here is the hacky C code I coded up to gather redis key type stats:</p>
-{% gist 1260574 redis-key-stats.c %}
+<script src="http://gist.github.com/1260574.js?file=redis-key-stats.c"></script>
+

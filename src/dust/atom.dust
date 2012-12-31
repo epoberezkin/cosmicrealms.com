@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>{~n}
+<feed xmlns="http://www.w3.org/2005/Atom">{~n}
+	<title>{blog.title}</title>
+	<link href="{blog.baseURL}/atom.xml" rel="self"/>
+	<link href="{blog.baseURL}"/>
+	<updated>{blog.lastUpdated}</updated>
+	<id>{blog.baseURL}</id>
+	<author>
+		<name>{blog.author}</name>
+		<email>{blog.emailAddress}</email>
+	</author>
+	{#posts}
+		<entry>
+			<title>{title}</title>
+			<link href="{fullURLPath}/"/>
+			<updated>{dateComputer}</updated>
+			<id>{fullURLPath}</id>
+			<content type="html">{content}</content>
+		</entry>
+	{/posts}
+</feed>

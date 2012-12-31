@@ -3,5 +3,6 @@
 	"description"        : "a coder blog",
 	"author"             : "Sembiance (Robert Schultz)",
 	"emailAddress"       : "robert@cosmicrealms.com",
-	"googleAnalyticsKey" : "UA-26058758-1"
+	"googleAnalyticsKey" : "UA-26058758-1",
+	"baseURL"            : "http://cosmicrealms.com"
 }

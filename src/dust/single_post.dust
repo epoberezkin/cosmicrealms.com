@@ -1,0 +1,30 @@
+{>"common/html_open"/}
+    {>"common/head_open"/}
+    {>"common/head_close"/}
+    {>"common/body_open"/}
+    	{>"header"/}
+    	{>"nav"/}
+    	<div id="main">
+			<div id="content">
+				<div>
+					{#post}
+						{>"post"/}
+					{/post}
+				</div>
+				{>"sidebar"/}
+			</div>
+		</div>
+    	{>"footer"/}
+		<script type="text/javascript">
+			(function () {
+				var disqus_shortname = "cosmicrealms";
+				var disqus_identifier = "{blog.baseURL}{urlPath}/";
+				var disqus_url = "{blog.baseURL}{urlPath}/";
+				var disqus_title = "{title}";
+				var dsq = document.createElement("script"); dsq.type = "text/javascript"; dsq.async = true;
+				dsq.src = "http://" + disqus_shortname + ".disqus.com/embed.js";
+				(document.getElementsByTagName("head")[0] || document.getElementsByTagName("body")[0]).appendChild(dsq);
+			}());
+		</script>
+    {>"common/body_close"/}
+{>"common/html_close"/}

@@ -1,0 +1,8 @@
+<p>So I haven't posted here in almost an entire year.</p>
+<p>The main reason is because my previous blog code (<a href="http://octopress.org/">Octopress</a>) was in a broken state and after spending about and hour trying to fix it, I gave up.</p>
+<p>The ruby version and gem versions Octopress wanted were not compatible with the versions I had installed on my system. I tried using RVM but that was proving to be a huge pain in the ass.</p>
+<p>While I always liked the clean look of Octopress and the fact that it generates static HTML files, I disliked having to write my posts in markdown and felt it was too cryptic to create new posts/add new features.</p>
+<p>So I decided to code my own. I did it with node.js and it took me about a day. I replicated the look and feel of the Octopress theme and kept the same URL format (so Disqus comments would carry over and RSS feeds wouldn't break).</p>
+<p>All the code underneath this blog is open source and available here: <a href="https://github.com/Sembiance/cosmicrealms.com">https://github.com/Sembiance/cosmicrealms.com</a></p>
+<p>Note: I didn't really make the code for others to use, so... beware.</p>
+<p>Now that I have a functioning blog again, I have 2 or 3 blog posts I've been wanting to posts for a few months. Those will be coming soon :)</p>

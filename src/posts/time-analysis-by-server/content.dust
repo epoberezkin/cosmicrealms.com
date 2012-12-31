@@ -1,0 +1,255 @@
+<p>Traffic analysis for <a href="http://worldofsolitaire.com">World of Solitaire</a> shows more visits on the weekdays compared to the weekends.</p>
+<p>I suspect that this is due to people playing solitaire from work and school. I wanted to see at what hour of the day people are visiting to see if it is during normal work and school hours.</p>
+<p>Measuring with just the server time however wouldn't give an accurate measurement of what time of day it truly was at the visitor's geographic location in the world.</p>
+<p style="margin-bottom: 0;">I measured each visit three different ways:</p>
+<ul>
+	<li>The server's time
+	<li>The client's actual local time (read by javascript in their browser)
+	<li>The client's IP address (converted to a city/time zone using GeoIP)
+</ul>
+<p>The data was collected over a 1 week period from Sun Oct 16 to Sat Oct 22.</p>
+<p>Here are the visits broken down by day:</p>
+<div id="byDay"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "byDay",
+					defaultSeriesType : "line",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { text : "Visits - By Day" },
+				xAxis : { categories : [ "Sunday", "Monday", "Tuesdau", "Wednesday", "Thursday", "Friday", "Saturday" ] },
+				yAxis :
+				{
+					title : { text : "Visits" },
+					plotLines : [ { value : 0, width : 1, color : "#808080" } ]
+				},
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.series.name + "</b><br/>" + this.x + ": " + Highcharts.numberFormat(this.y, 0, ',') + " visits";
+					}
+				},
+				legend :
+				{
+					layout : "vetical",
+					align : "right",
+					verticalAlign : "top",
+					borderWidth : 0
+				},
+				series :
+				[
+					{ "name" : "Server", "data" : [179495,234366,234568,235632,230686,216782,170246] },
+					{ "name" : "IP",     "data" : [177824,234386,234644,235364,230721,218387,170449] },
+					{ "name" : "Client", "data" : [177406,234192,234006,235082,230341,217767,169878] }
+				]
+			});
+	});
+</script>
+<p>All three show pretty much the same thing. Most of my traffic comes from the states and my server is located here, so it looks like at a 'day' level, using the server time is reliable.</p>
+<p>Let's break it down by hour:</p>
+<div id="weekByHour"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "weekByHour",
+					defaultSeriesType : "line",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { text : "Visits - By Hour (Full Week)" },
+				xAxis :
+				{
+				    tickInterval : 6,
+					categories : [ "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM",
+			  					   "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM" ],
+					labels :
+					{
+						step : 1,
+						x : 100,
+						formatter : function()
+						{
+							if(this.value=="12AM")
+								return "Midnight to 6AM";
+							else if(this.value=="6AM")
+								return "6AM to Noon";
+							else if(this.value=="12PM")
+								return "Noon to 6PM";
+							else if(this.value=="6PM")
+								return "6PM to Midnight";
+						}
+					}
+				},
+				yAxis :
+				{
+					title : { text : "Visits" },
+					plotLines : [ { value : 0, width : 1, color : "#808080" } ]
+				},
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.series.name + "</b><br/><b>" + this.x + "</b>: " + Highcharts.numberFormat(this.y, 0, ',') + " visits";
+					}
+				},
+				legend :
+				{
+					layout : "vetical",
+					align : "right",
+					verticalAlign : "top",
+					borderWidth : 0
+				},
+				series :
+				[
+					{"name":"Server","data":[31827,27249,24394,25146,27437,34174,44214,57596,68062,76144,83290,86645,87511,89494,93779,94263,87063,78223,76082,73590,72032,66413,55470,41677]},
+					{"name":"IP","data":[23996,14086,9577,7717,8294,14309,27184,45516,64568,76303,82624,87844,92680,94519,97704,103869,103858,90196,84694,88529,90382,85215,65813,42298]},
+					{"name":"Client","data":[25090,13797,8576,6521,6923,11804,23864,40925,62340,75981,83063,87985,94171,95655,98271,104455,106472,90442,83224,86933,89551,86464,70107,46058]}
+				]
+			});
+	});
+</script>
+<p>Now this is much more interesting! It shows that measuring with just the server time is not an accurate reading of what time of day people visit.</p>
+<p>There is a 20% drop in visits between 4PM and 6PM, right about the time people would leave work and school.</p>
+<p>The above graph was for the entire week. What about looking only at weekdays and weekends, will we see something different?</p>
+<div id="weekdayByHour"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "weekdayByHour",
+					defaultSeriesType : "line",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { text : "Visits - By Hour (Weekdays)" },
+				xAxis :
+				{
+				    tickInterval : 6,
+					categories : [ "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM",
+			  					   "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM" ],
+					labels :
+					{
+						step : 1,
+						x : 100,
+						formatter : function()
+						{
+							if(this.value=="12AM")
+								return "Midnight to 6AM";
+							else if(this.value=="6AM")
+								return "6AM to Noon";
+							else if(this.value=="12PM")
+								return "Noon to 6PM";
+							else if(this.value=="6PM")
+								return "6PM to Midnight";
+						}
+					}
+				},
+				yAxis :
+				{
+					title : { text : "Visits" },
+					plotLines : [ { value : 0, width : 1, color : "#808080" } ]
+				},
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.series.name + "</b><br/><b>" + this.x + "</b>: " + Highcharts.numberFormat(this.y, 0, ',') + " visits";
+					}
+				},
+				legend :
+				{
+					layout : "vetical",
+					align : "right",
+					verticalAlign : "top",
+					borderWidth : 0
+				},
+				series :
+				[
+					{"name":"Server","data":[23635,20622,18408,19385,21212,27064,35266,45856,53481,59555,65324,67698,68493,69933,73999,73906,66689,58720,56642,53973,52983,48379,40391,30420]},
+					{"name":"IP","data":[16858,9642,6790,5507,6244,11353,22107,36320,50827,59238,64186,69406,73771,75274,77475,82709,81040,67970,63243,65573,66709,62704,48038,30518]},
+					{"name":"Client","data":[17571,9408,5908,4592,5119,9218,19209,32731,49153,59379,64884,69122,75135,76246,78242,83548,84133,68265,61567,64195,65792,63590,51095,33286]}
+				]
+			});
+	});
+</script>
+<div id="weekendByHour"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "weekendByHour",
+					defaultSeriesType : "line",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { text : "Visits - By Hour (Weekends)" },
+				xAxis :
+				{
+				    tickInterval : 6,
+					categories : [ "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM",
+			  					   "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM" ],
+					labels :
+					{
+						step : 1,
+						x : 100,
+						formatter : function()
+						{
+							if(this.value=="12AM")
+								return "Midnight to 6AM";
+							else if(this.value=="6AM")
+								return "6AM to Noon";
+							else if(this.value=="12PM")
+								return "Noon to 6PM";
+							else if(this.value=="6PM")
+								return "6PM to Midnight";
+						}
+					}
+				},
+				yAxis :
+				{
+					title : { text : "Visits" },
+					plotLines : [ { value : 0, width : 1, color : "#808080" } ]
+				},
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.series.name + "</b><br/><b>" + this.x + "</b>: " + Highcharts.numberFormat(this.y, 0, ',') + " visits";
+					}
+				},
+				legend :
+				{
+					layout : "vetical",
+					align : "right",
+					verticalAlign : "top",
+					borderWidth : 0
+				},
+				series :
+				[
+					{"name":"Server","data":[8192,6627,5986,5761,6225,7110,8948,11740,14581,16589,17966,18947,19018,19561,19780,20357,20374,19503,19440,19617,19049,18034,15079,11259]},
+					{"name":"IP","data":[7138,4444,2787,2210,2050,2956,5077,9196,13741,17065,18438,18438,18909,19245,20229,21160,22818,22226,21451,22956,23673,22512,17776,11780]},
+					{"name":"Client","data":[7519,4389,2668,1929,1804,2586,4655,8194,13187,16602,18179,18863,19036,19409,20029,20907,22339,22177,21657,22738,23759,22874,19012,12772]}
+				]
+			});
+	});
+</script>
+<p>The weekday chart shows an even bigger drop between 4PM and 6PM, 27%.</p>
+<p>The weekend only shows a tiny 3% drop during this same period. On the weekends the traffic doesn't drop until about 9PM, bed time for many people.</p>
+<p>It looks like using the GeoIP version of the client's IP address is an accurate way to measure the client's actual local time.</p>
+<p>Can we also say that people are visiting from work and school? The data seems to point in that direction, but it isn't definitive proof. People may be playing from home while their significant others go to work and then stop when they arrive home.</p>

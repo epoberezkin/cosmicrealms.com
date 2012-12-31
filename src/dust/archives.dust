@@ -1,0 +1,32 @@
+{>"common/html_open"/}
+    {>"common/head_open"/}
+    {>"common/head_close"/}
+    {>"common/body_open"/}
+    	{>"header"/}
+    	{>"nav"/}
+    	<div id="main">
+			<div id="content">
+				<div>
+					<article>
+						<header>
+							<h1>Blog Archives</h1>
+						</header>
+						<div class="archives">
+							{#posts}
+								{?newYear}
+									<h2>{newYear}</h2>
+								{/newYear}
+								<article>
+									<h1><a href="{urlPath}">{title}</a></h1>
+									<time datetime="{dateComputer}" pubdate>{dateShortHuman}</time>
+								</article>
+							{/posts}
+						</div>
+					</article>
+				</div>
+				{>"sidebar"/}
+			</div>
+		</div>
+    	{>"footer"/}
+    {>"common/body_close"/}
+{>"common/html_close"/}

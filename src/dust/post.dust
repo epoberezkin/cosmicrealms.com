@@ -1,10 +1,21 @@
-{>"common/html_open"/}
-    {>"common/head_open"/}
-    {>"common/head_close"/}
-    {>"common/body_open"/}
-    	{>"header"/}
-    	{>"nav"/}
-    	{>"main"/}
-    	{>"footer"/}
-    {>"common/body_close"/}
-{>"common/html_close"/}
+<article>
+	<header>
+		<h1><a href="{urlPath}">{title}</a></h1>
+		<p class="meta">
+			<time datetime="{dateComputer}" pubdate>{dateHuman}</time>
+		</p>
+	</header>
+	<div class="postContent">{content|s}</div>
+	<footer>
+		<p class="meta">
+			<span class="byline author vcard">Posted by <span class="fn">{author}</span></span>
+			<time datetime="{dateComputer}" pubdate>{dateHuman}</time>
+		</p>
+	</footer>
+</article>
+{?showComments}
+	<section>
+		<h1>Comments</h1>
+		<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	</section>
+{/showComments}

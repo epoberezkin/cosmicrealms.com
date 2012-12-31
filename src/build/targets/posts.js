@@ -6,11 +6,12 @@ var base = require("node-base"),
 	fs = require("fs"),
 	path = require("path"),
 	dustUtils = require("node-utils").dust,
+	dateFormat = require("dateformat"),
 	runUtils = require("node-utils").run;
 
 module.exports = function(basePath, srcPath, targetPath, cb)
 {
-	var _getPost = function(postid, cb)
+	var _getPost = function(blogData, postid, cb)
 	{
 		step(
 			function getMetaJSON()
@@ -39,19 +40,28 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 				post.urlPath = "/blog/" + post.date.getFullYear() + "/" + month + "/" + day + "/" + postid;
 
+				post.dateHuman = dateFormat(post.date, "mmm dS, yyyy");
+				post.dateComputer = dateFormat(post.date, "isoDateTime");
+				post.dateShortHuman = dateFormat(post.date, "mmm dd");
 				post.contentPath = path.join(srcPath, "posts", postid);
 				post.id = postid;
+				post.author = blogData.author;
+				post.fullURLPath = blogData.baseURL + post.urlPath;
 
-				this(null, post);
+				this.post = post;
+
+				dustUtils.render(post.contentPath, "content", post, this);
 			},
-			function returnPost(err, post)
+			function returnPost(err, postContent)
 			{
-				cb(err, post);
+				this.post.content = postContent;
+
+				cb(err, this.post);
 			}
 		);
 	};
 
-	var _getPosts = function(cb)
+	var _getPosts = function(blogData, cb)
 	{
 		step(
 			function readDir()
@@ -71,7 +81,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 					if(fs.statSync(path.join(srcPath, "posts", file, "meta.json")).isFile())
 					{
 						hasPosts = true;
-						_getPost(file, cb);
+						_getPost(blogData, file, cb);
 					}
 				}, this);
 			},
@@ -88,19 +98,19 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 	};
 
 	step(
-		function createBlogDirectory()
+		function createBlogDirectories()
 		{
-			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog")], this);
+			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog")], this.parallel());
+			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog", "archives")], this.parallel());
 		},
-		function getBlogJSONAndPosts(err)
+		function getBlogJSON(err)
 		{
 			if(err)
 				throw err;
 
-			fs.readFile(path.join(srcPath, "config.json"), "utf8", this.parallel());
-			_getPosts(this.parallel());
+			fs.readFile(path.join(srcPath, "config.json"), "utf8", this);
 		},
-		function processPosts(err, blogJSON, posts)
+		function getPosts(err, blogJSON)
 		{
 			if(err)
 				throw err;
@@ -108,38 +118,46 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 			var blogData = JSON.parse(blogJSON);
 			blogData.currentYear = (new Date()).getFullYear();
 
+			this.blogData = blogData;
+
+			_getPosts(blogData, this);
+		},
+		function processPosts(err, posts)
+		{
+			if(err)
+				throw err;
+
 			var recentPosts = [];
 			for(var i=0,len=posts.length;i<5 && i<len;i++)
 			{
 				recentPosts.push({href : posts[i].urlPath, title : posts[i].title});
 			}
+
+			this.posts = posts;
+
+			var blogData = this.blogData;
 			blogData.recentPosts = recentPosts;
+			blogData.lastUpdated = dateFormat(posts[0].date, "isoDateTime");
 
 			posts.serialForEach(function(post, cb)
 			{
 				var postPath = path.join(targetPath, post.urlPath);
 
-				post.blog = blogData;
+				var dustData = { showComments : true };
+				dustData.post = post;
+				dustData.blog = blogData;
 
 				step(
 					function createDirectory()
 					{
 						runUtils.run("mkdir", ["-p", postPath], this);
 					},
-					function renderPostPart(err)
+					function renderPost(err)
 					{
 						if(err)
 							throw err;
 
-						dustUtils.render(post.contentPath, "content", post, this);
-					},
-					function renderPost(err, postPart)
-					{
-						if(err)
-							throw err;
-
-						base.info(postPart);
-						dustUtils.render(path.join(srcPath, "dust"), "post", post, this);
+						dustUtils.render(path.join(srcPath, "dust"), "single_post", dustData, this);
 					},
 					function savePost(err, postHTML)
 					{
@@ -151,6 +169,74 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 					function finish(err) { cb(err); }
 				);
 			}, this);
+		},
+		function generateAtomXML(err)
+		{
+			if(err)
+				throw err;
+
+			var dustData = {};
+			dustData.posts = this.posts;
+			dustData.blog = this.blogData;
+
+			dustUtils.render(path.join(srcPath, "dust"), "atom", dustData, this);
+		},
+		function saveAtomXML(err, atomXML)
+		{
+			if(err)
+				throw err;
+
+			fs.writeFile(path.join(targetPath, "atom.xml"), atomXML, "utf8", this.parallel());
+		},
+		function generateIndexHTML(err)
+		{
+			if(err)
+				throw err;
+
+			var dustData = {};
+			dustData.posts = this.posts.slice(0, 10);
+			dustData.blog = this.blogData;
+			if(this.posts.length>1)
+				dustData.hasMorePosts = true;
+
+			dustUtils.render(path.join(srcPath, "dust"), "index", dustData, this);
+		},
+		function saveIndexHTML(err, indexHTML)
+		{
+			if(err)
+				throw err;
+
+			fs.writeFile(path.join(targetPath, "index.html"), indexHTML, "utf8", this);
+		},
+		function generateArchivesHTML(err)
+		{
+			if(err)
+				throw err;
+
+			var dustData = {};
+			dustData.blog = this.blogData;
+
+			var lastYear = null;
+			this.posts.forEach(function(post)
+			{
+				var year = post.date.getFullYear();
+				if(year!==lastYear)
+				{
+					post.newYear = year;
+					lastYear = year;
+				}
+			});
+
+			dustData.posts = this.posts;
+
+			dustUtils.render(path.join(srcPath, "dust"), "archives", dustData, this);
+		},
+		function saveArchivesHTML(err, archivesHTML)
+		{
+			if(err)
+				throw err;
+
+			fs.writeFile(path.join(targetPath, "blog", "archives", "index.html"), archivesHTML, "utf8", this);
 		},
 		function finish(err) { cb(err); }
 	);

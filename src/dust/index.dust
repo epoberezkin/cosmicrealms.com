@@ -1,0 +1,24 @@
+{>"common/html_open"/}
+    {>"common/head_open"/}
+    {>"common/head_close"/}
+    {>"common/body_open"/}
+    	{>"header"/}
+    	{>"nav"/}
+    	<div id="main">
+			<div id="content">
+				<div class="index">
+					{#posts}
+						{>"post"/}
+					{/posts}
+					{?hasMorePosts}
+						<nav class="pagination">
+							<div><a href="/blog/archives">Blog Archives</a></div>
+						</nav>
+					{/hasMorePosts}
+				</div>
+				{>"sidebar"/}
+			</div>
+		</div>
+    	{>"footer"/}
+    {>"common/body_close"/}
+{>"common/html_close"/}
