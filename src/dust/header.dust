@@ -1,0 +1,6 @@
+<header>
+	<hgroup>
+		<h1><a href="/">{blog.title}</a></h1>
+		<h2>{blog.description}</h2>
+	</hgroup>
+</header>

@@ -1,5 +1,7 @@
 {
-	"title"  : "cosmic realms",
-	"author" : "Sembiance (Robert Schultz)",
+	"title"              : "cosmic realms",
+	"description"        : "a coder blog",
+	"author"             : "Sembiance (Robert Schultz)",
+	"emailAddress"       : "robert@cosmicrealms.com",
 	"googleAnalyticsKey" : "UA-26058758-1"
 }

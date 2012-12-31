@@ -1,0 +1,3 @@
+<footer>
+	<p>Copyright © {blog.currentYear} - {blog.author} <a href="mailto:{blog.emailAddress}">{blog.emailAddress}</a></p>
+</footer>
