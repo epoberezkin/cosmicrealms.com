@@ -1,0 +1,16 @@
+{
+	"name"					: "cosmicrealms-dot-com",
+	"version"				: "0.0.1",
+	"author"				: "Robert Schultz <robert@telparia.com>",
+	"description"			: "private package for cosmicrealms.com blog",
+	"private"				: true,
+	"dependencies"			:
+	{
+		"node-base"			: "git://github.com/Sembiance/node-base.git",
+		"accounting"		: ">= 0.3.0",
+		"step"				: "git://github.com/Sembiance/step.git",
+		"stylus"			: ">= 0.31.0",
+		"optimist"			: ">= 0.3.5",
+		"node-utils"		: "git://github.com/Sembiance/node-utils.git"
+	}
+}
