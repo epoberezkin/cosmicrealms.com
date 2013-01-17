@@ -1,0 +1,16 @@
+cd src/posts
+mkdir new-post-title-url-safe
+cd new-post-title-url-safe
+echo '{ "title" : "New Blog Code", "date" : "12-31-2012 18:42" }' > meta.json
+nano content.dust
+cd ../../build
+node build.js
+
+VISIT: http://dev.cosmicrealms.com/
+TEST NEW POST! Edit content.dust and rebuild as needed!
+
+WHEN READY TO DEPLOY:
+cd ../deploy
+node deploy.js
+
+TEST ON LIVE SERVER!!! http://cosmicrealms.com

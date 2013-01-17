@@ -1,0 +1,56 @@
+<style>
+	.postContent h2 { font-size: 1.8em; padding-top: 1.5em; }
+	.postContent strong { font-weight: bold; }
+	.postContent p.images { text-align: center; }
+	.postContent p.images img { margin-left: 1.0em; margin-right:; 1.0em; }
+</style>
+<p>My first computer was a Commodore 64. I have fond memories of paging through Commodore magazines, eyes closely examining every inch of the game advertisements, dreaming of what adventures lie within the game.</p>
+<p>About 4 months ago I came across a complete PDF collection of every Compute Gazette and Run magazine. These were the exact magazines that I grew up with as a kid.<p>
+<p>I started browsing around the PDF's. A smile quickly came to my face. A smile which only grew larger, feeding off the fuel of nostalgia that was billowing up inside me.</p>
+<p>After all, who could resist smiling at such classic game ads:</p>
+<p class="images"><img src="/images/buck_rogers.png"><img src="/images/bards_tale_iii.png"></p>
+<p class="images"><img src="/images/defender_of_the_crown.png"><img src="/images/legacy_of_the_ancients.png"></p>
+<p class="images"><img src="/images/grand_prix.png"><img src="/images/neuromancer.png"></p>
+<p class="images"><img src="/images/ultima.png"><img src="/images/wasteland.png"></p>
+<p>I wanted to feel this happy nostalgia feeling again in the future. So I decided I would create some wallpaper montages out of these game ads.</p>
+<p>Being a coder, I certainly wasn't going to do it by hand.</p>
+<p>So I fired up my favorite code editor (<a href="http://www.sublimetext.com/2">Sublime Text 2</a>) and created a new project!</p>
+<p>NOTE: A link to the <a href="#code">code</a> is located at the bottom of this post.</p>
+<h2>Step 1 - Extract the PDF pages as images</h2>
+<p>This part was pretty easy as I had done it in the past. I simply used the <strong>pdfimages</strong> program provided by the <a href="http://poppler.freedesktop.org/">poppler</a> package.</p>
+<p>This produced a bunch of PPM image files which I easily converted to PNG using <a href="http://www.imagemagick.org/script/index.php">ImageMagick's</a> <strong>convert</strong> program.</p>
+<p>Extracting the pages from 187 magazine issues produced 23,079 PNG files.</p>
+<h2>Step 2 - Remove duplicates</h2>
+<p>The same game ad would often appear in multiple issues, so the next task is to elimnate any duplicate images.</p>
+<p>Since these are scans from 30 year old magazines, we'll never have an exact pixel match, so we'll have to use a program to check similarity.</p>
+<p>For this task I used the <strong>puzzle-diff</strong> program from the <a href="http://www.pureftpd.org/project/libpuzzle">libpuzzle</a> package.</p>
+<p>It's a dead simple program. Feed it two images and it will give you tell you the similarity between the two. Simply compare each page to every other page and remove any that are so similar they are likely duplicates.</p>
+<h2>Step 3 - Remove non-ad pages</h2>
+<p>A majority of the pages in these magazines are not game ads. Things like articles and code listings are unwanted. Time to filter these out.</p>
+<p>With the help of the NPM module <a href="https://github.com/Munter/node-histogram">node-histogram</a>, I compared each pixels RGB values average and standard deviation and against some values I came up through trial and error.</p>
+<p>This comparison told me if the pixel was 'colorful' or not. Unless a minimum percentage of pixels were colorful, the image was discarded.</p>
+<h2>Step 4 - Remove boring pages with lots of text</h2>
+<p>When I browsed the remaining images, I found numerous images that contained enough color to pass my colorful test, but were clearly not game ads:</p>
+<p class="images"><img src="/images/blue_ad.png"></p>
+<p>So next I decided to use OCR to remove pages with too much text.</p>
+<p>To do the actual OCR I used the <a href="http://code.google.com/p/tesseract-ocr/">tesseract</a> library.</p>
+<p>Any pages with too many words on them were discarded.</p>
+<h2>Step 5 - Final pass by hand</h2>
+<p>The scripts I coded had done a remarkable job.</p>
+<p>They reduced the original 29,079 images to about 800.</p>
+<p>At this point I decided to just visually inspect the remaining images to remove any remaining bad ones.</p>
+<h2>Step 6 - Constructing the final wallpaper images</h2>
+<p>At the end, I had 627 cool ads sitting in a directory.</p>
+<p>I randomly split the images up into five directories, then used ImageMagick to scale them down and <strong>montage</strong> them into the final wallpaper images.
+<p>Each image is about 5200x5400 in size, give or take a few thousands pixels.</p>
+<p>I wrote a script a while ago to randomly choose a wallpaper image for each of three displays whenever I log in. If the image is larger than the resolution of that monitor, the image is randomly cropped for display.</p>
+<p>The final Commodore game wallpaper images are now part of this rotation and whenever they are chosen, I smile :)</p>
+<h2>Final Results!</h2>
+<p>Here are the final results! Click on the images for the full size versions:</p>
+<p class="images"><a href="http://telparia.com/Commodore_Game_Ads_1.jpg"><img src="/images/Commodore_Game_Ads_1_preview.jpg"></a><a href="http://telparia.com/Commodore_Game_Ads_2.jpg"><img src="/images/Commodore_Game_Ads_2_preview.jpg"></a></p>
+<p class="images"><a href="http://telparia.com/Commodore_Game_Ads_3.jpg"><img src="/images/Commodore_Game_Ads_3_preview.jpg"></a><a href="http://telparia.com/Commodore_Game_Ads_4.jpg"><img src="/images/Commodore_Game_Ads_4_preview.jpg"></a></p>
+<p class="images"><a href="http://telparia.com/Commodore_Game_Ads_5.jpg"><img src="/images/Commodore_Game_Ads_5_preview.jpg"></a></p>
+<h2><a name="code">Code</a></h2>
+<p>The code is a collection of <a href="http://nodejs.org">node.js</a> scripts that I created to perform all the tasks I mentioned above</p>
+<p>You can find the code here: <a href="https://github.com/Sembiance/c64_magazine_wallpaper">https://github.com/Sembiance/c64_magazine_wallpaper</a></p>
+<p>NOTE: I haven't run the code in many months and I never intended to release it. It is unlikely to work "out of the box".</p>

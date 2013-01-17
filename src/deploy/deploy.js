@@ -15,8 +15,8 @@ var srcPath = path.join(basePath, "pub");
 step(
 	function copyFiles()
 	{
-		runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "sapphire:/srv/cosmicrealms.com/"], this.parallel());
-		runUtils.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "sapphire:/srv/"], this.parallel());
+		runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "opal:/srv/cosmicrealms.com/"], this.parallel());
+		runUtils.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "opal:/srv/"], this.parallel());
 	},
 	function finish(err)
 	{
