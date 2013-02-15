@@ -11,11 +11,11 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 	tiptoe(
 		function makeDirectories()
 		{
-			runUtils.run("mkdir", ["-p", path.join(targetPath, "images")], this);
+			runUtils.run("mkdir", ["-p", path.join(targetPath, "cursors")], this);
 		},
 		function copyFiles()
 		{
-			runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "images"), targetPath], this);
+			runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "cursors"), targetPath], this);
 		},
 		function finish(err) { cb(err); }
 	);

@@ -8,7 +8,7 @@
 	{
 		"node-base"			: "git://github.com/Sembiance/node-base.git",
 		"accounting"		: ">= 0.3.0",
-		"step"				: "git://github.com/Sembiance/step.git",
+		"tiptoe"			: ">= 0.1.1",
 		"stylus"			: ">= 0.31.0",
 		"optimist"			: ">= 0.3.5",
 		"node-utils"		: "git://github.com/Sembiance/node-utils.git",

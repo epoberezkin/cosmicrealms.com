@@ -1,0 +1,184 @@
+<style>
+	.postContent .cursorBox
+	{
+		background-color: #555555;
+		width: 200px;
+		height: 200px;
+		color: #CCCCCC;
+		position: relative;
+		overflow-y: auto;
+	}
+
+	.postContent .cursorBox h3
+	{
+		position: absolute;
+		top: 0.2em;
+		left: 0.2em;
+		margin: 0;
+	}
+
+	.postContent .cursorBox .forceScroll
+	{
+		height: 400px;
+		width: 100px;
+	}
+
+	.postContent .pointer
+	{
+		cursor: url("/cursors/pointer.cur"), auto;
+	}
+
+	.postContent .pointerDown
+	{
+		cursor: url("/cursors/pointerDown.cur"), auto;
+	}
+
+	.postContent .arrow
+	{
+		cursor: url("/cursors/arrow.cur"), auto;
+	}
+
+	.postContent table.results
+	{
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+		border: 1px solid rgba(55, 55, 55, 0.3);
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 2.5em;
+		margin-bottom: 0.5em;
+	}
+
+	.postContent table.results th
+	{
+		font-weight: bold;
+		font-size: 120%;
+		text-decoration: underline;
+		text-align: center;
+		padding-right: 2.0em;
+	}
+
+	.postContent table.results tr td:first-child
+	{
+		text-align: right;
+		padding-right: 1.0em;
+		font-weight: bold;
+		white-space: nowrap;
+	}
+</style>
+<p>Looking to add a custom cursor to your web page or HTML5 game?</p>
+<p>Be prepared for some significant pain... and not just with IE.</p>
+<p>This post details the current state of custom cursor support.<br>
+Multiple browsers are tested on Linux, Windows and Mac OS X.</p>
+<p style="margin-bottom: 0.2em;">The following CSS is being used:</p>
+<pre><code data-language="css">
+	.pointer {
+		cursor: url("/cursors/pointer.cur"), auto;
+	}
+
+	.pointerDown { 
+		cursor: url("/cursors/pointerDown.cur"), auto;
+	}
+
+	.arrow { 
+		ursor: url("/cursors/arrow.cur"), auto;
+	}	
+</code></pre>
+<p><strong>Note:</strong> A small glitch may occur once during each test, while the browser loads the cursor. Thus each test should be tried twice.</p>
+<p>To run each test, simply move your mouse over each grey box.</p>
+<h2>Simple Custom Cursor</h2>
+<p>For this test, we will simply show a custom cursor.</p>
+<div class="cursorBox pointer"><h3>.pointer</h3></div>
+<table class="results">
+	<tr><th colspan="2">Results</th></tr>
+	<tr><td>Firefox 2, 3.6, 8, 14, 18</td><td>Works!</td></tr>
+	<tr><td>Chrome 21, 24, 25</td><td>Works!</td></tr>
+	<tr><td>Safari 4.0.5, 5.1.4, 6.0.2</td><td>Works!</td></tr>
+	<tr><td>IE 9, 10</td><td>Works!</td></tr>
+	<tr><td>IE 6, 7, 8</td><td>Works, but cursor is constrained to 32x32</td></tr>
+	<tr><td>Opera 12.14</td><td>Fails - Custom cursors are not supported</td></tr>
+</table>
+<p>Ok, not the end of the world. If we forget about Opera and restrict our cursor size to 32x32 for IE, we can support almost all browsers.</p>
+<p><strong>UPDATE 2-14-2013:</strong> Opera has decided to <a href="http://my.opera.com/ODIN/blog/300-million-users-and-move-to-webkit">switch to WebKit</a> for their rendering engine. This means we will likely see custom cursor support in the next WebKit based version of Opera!</p>
+<h2>Automatic Cursor Changing</h2>
+<p>This test will automatically alternate between two different cursors.</p>
+<div class="cursorBox pointer" id="alternateCursor"><h3>.pointer</h3></div>
+<script>
+	$(document).ready(function() {
+		setInterval(function() {
+			var alternateCursor = $("#alternateCursor");
+			if(alternateCursor.hasClass("pointer"))
+			{
+				alternateCursor.children("h3").text(".arrow");
+				alternateCursor.removeClass("pointer");
+				alternateCursor.addClass("arrow");
+			}
+			else
+			{
+				alternateCursor.children("h3").text(".pointer");
+				alternateCursor.removeClass("arrow");
+				alternateCursor.addClass("pointer");
+			}
+		}, 2000);
+	});
+</script>
+<table class="results">
+	<tr><th colspan="2">Results</th></tr>
+	<tr><td>Firefox 2, 8, 14, 18</td><td>Works!</td></tr>
+	<tr><td>Chrome 21, 24, 25</td><td>Works!</td></tr>
+	<tr><td>Safari 5.1.4, 6.0.2</td><td>Works!</td></tr>
+	<tr><td>Safari 4.0.5</td><td>Fails* - Never changes after the first custom cursor</td></tr>
+	<tr><td>IE 7, 8, 9, 10</td><td>Fails* - Never changes after the first custom cursor</td></tr>
+	<tr><td>IE 6</td><td>Fails* - Changes to default arrow on first switch and remains that</td></tr>
+	<tr><td>Opera 12.14</td><td>Fails - Custom cursors are not supported</td></tr>
+</table>
+<p><strong>Fails*</strong> - If you continually move the mouse around, then the cursor changes correctly.</p>
+<p>Basically, mouse movement is required in many browsers in order to re-draw the correct custom cursor.</p>
+There is an open issue for Chrome about this: <a href="http://code.google.com/p/chromium/issues/detail?id=26723">Issue #26723</a><br>
+However my tests with Chrome didn't show a problem.</p>
+<h2>Change Cursor on Mouse Down</h2>
+<p>Let's try changing the custom cursor when the mouse button is pushed down.</p>
+<div class="cursorBox pointer changeOnMouseDown"><h3>.pointer</h3></div>
+<script>
+	$(document).ready(function() {
+		$(".changeOnMouseDown").mousedown(function() { $(this).removeClass("pointer").addClass("pointerDown"); $(this).children("h3").text(".pointerDown"); });
+		$(".changeOnMouseDown").mouseup(function() { $(this).removeClass("pointerDown").addClass("pointer"); $(this).children("h3").text(".pointer"); });
+	});
+</script>
+<table class="results">
+	<tr><th colspan="2">Results</th></tr>
+	<tr><td>Firefox 2, 8, 14, 18</td><td>Works!</td></tr>
+	<tr><td>Chrome 21, 24, 25</td><td>Fails - Does not change on mouse down</td></tr>
+	<tr><td>Safari 4.0.5, Safari 5.1.4, 6.0.2</td><td>Fails - Does not change on mouse down</td></tr>
+	<tr><td>IE 9, 10</td><td>Fails - Does not change until mouse up, then shows the default arrow</td></tr>
+	<tr><td>IE 7, 8</td><td>Fails* - Does not change until mouse up, then shows the down version</td></tr>
+	<tr><td>IE 6</td><td>Fails* - Changes to default arrow on mouse down</td></tr>
+	<tr><td>Opera 12.14</td><td>Fails - Custom cursors are not supported</td></tr>
+</table>
+<p><strong>Fails*</strong> - For IE 8 or less, if you move the mouse around, the cursor changes correctly.</p>
+<p>This is where things start to get ugly. The ONLY browser that supports changing the cursor when the mouse button is pressed is FireFox.</p>
+<p>So if you were hoping to have a cursor change while the user clicks on things... think again.</p>
+<p><strong>UPDATE 2-14-2013:</strong> A <a href="http://trac.webkit.org/changeset/142861">patch</a> has landed on WebKit that fixes the bug that prevented the cursor from changing on mouse down.<br>
+This means future versions of Chrome and Safari should both support this feature soon!</p>
+<h2>Custom Cursor With Scroll Bar</h2>
+<p>Does the custom cursor work when using a scroll bar?</p>
+<div class="cursorBox pointer"><h3>.pointer</h3><div class="forceScroll">&nbsp;</div></div>
+<table class="results">
+	<tr><th colspan="2">Results</th></tr>
+	<tr><td>Firefox 2, 8, 14, 18</td><td>Fails - Changes to default arrow when over scroll bar</td></tr>
+	<tr><td>Chrome 21, 24, 25</td><td>Works!</td></tr>
+	<tr><td>Safari 4.0.5, Safari 5.1.4, 6.0.2</td><td>Works!</td></tr>
+	<tr><td>IE 6, 7, 8, 9, 10</td><td>Fails - Changes to default arrow when over scroll bar</td></tr>
+	<tr><td>Opera 12.14</td><td>Fails - Custom cursors are not supported</td></tr>
+</table>
+<p>Pretty poor support for this. Oddly enough, Chrome and Safari (WebKit) are the winners in this test.<br>
+While not tested, my guess is select boxes will show similar problems with custom cursors.</p>
+<h2>Summary</h2>
+<p>As you can see, ALL the browsers have a long ways to go before you can rely on custom cursor support for something like a game.</p>
+<p>I discovered these problems when developing my latest web game: <a href="http://worldofcardgames.com">World of Card Games</a></p>
+<p>As a work around, I use a transparent 1x1 cursor and draw my own custom cursor image with an &lt;img&gt; tag.<br>
+On mouse move I use a CSS transform to translate the position of the &lt;img&gt; to the current cursor coordinates. This gives pretty good performance.</p>
+<p>Future web games I create will be WebGL based and their cursors will be also drawn with WebGL and likely animated.</p>
+<p>I don't anticipate browser support improving any time soon. Many of these issues have been known about for years.</p>
+<p><strong>UPDATE 2-14-2013:</strong> With Opera switching to WebKit and a patch landing in WebKit to fix the on mouse down bug, looks like things may be improving a lot sooner than I first thought!</p>

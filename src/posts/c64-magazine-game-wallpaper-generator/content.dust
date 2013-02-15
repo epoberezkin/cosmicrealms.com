@@ -1,6 +1,4 @@
 <style>
-	.postContent h2 { font-size: 1.8em; padding-top: 1.5em; }
-	.postContent strong { font-weight: bold; }
 	.postContent p.images { text-align: center; }
 	.postContent p.images img { margin-left: 1.0em; margin-right:; 1.0em; }
 </style>

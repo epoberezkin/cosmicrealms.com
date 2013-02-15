@@ -1,3 +1,4 @@
 <body>
 	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/highcharts.src.js"></script>
+	<script type="text/javascript" src="/js/rainbow-custom.min.js"></script>

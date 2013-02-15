@@ -13,5 +13,6 @@
 				<li><a href="{href}">{title}</a></li>
 			{/blog.recentPosts}
 		</ul>
+		<h2><a href="/blog/archives">All Posts...</a></h2>
 	</section>
 </aside>

@@ -1,7 +1,7 @@
 "use strict";
 
 var base = require("node-base"),
-	step = require("step"),
+	tiptoe = require("tiptoe"),
 	util = require("util"),
 	fs = require("fs"),
 	path = require("path"),
@@ -13,16 +13,13 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 {
 	var _getPost = function(blogData, postid, cb)
 	{
-		step(
+		tiptoe(
 			function getMetaJSON()
 			{
 				fs.readFile(path.join(srcPath, "posts", postid, "meta.json"), "utf8", this);
 			},
-			function processMetaJSON(err, metaJSON)
+			function processMetaJSON(metaJSON)
 			{
-				if(err)
-					throw err;
-
 				var post = JSON.parse(metaJSON);
 				
 				var dateParts = /([01]?[0-9])-([0123]?[0-9])-([0-9][0-9][0-9][0-9]) ([0-9]?[0-9]):([0-9][0-9])/.exec(post.date);
@@ -50,7 +47,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 				this.post = post;
 
-				dustUtils.render(post.contentPath, "content", post, this);
+				dustUtils.render(post.contentPath, "content", post, { keepWhitespace : true }, this);
 			},
 			function returnPost(err, postContent)
 			{
@@ -63,16 +60,13 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 	var _getPosts = function(blogData, cb)
 	{
-		step(
+		tiptoe(
 			function readDir()
 			{
 				fs.readdir(path.join(srcPath, "posts"), this);
 			},
-			function process(err, files)
+			function process(files)
 			{
-				if(err)
-					throw err;
-
 				var hasPosts = false;
 				var postids = [];
 
@@ -97,24 +91,18 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 		);
 	};
 
-	step(
+	tiptoe(
 		function createBlogDirectories()
 		{
 			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog")], this.parallel());
 			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog", "archives")], this.parallel());
 		},
-		function getBlogJSON(err)
+		function getBlogJSON()
 		{
-			if(err)
-				throw err;
-
 			fs.readFile(path.join(srcPath, "config.json"), "utf8", this);
 		},
-		function getPosts(err, blogJSON)
+		function getPosts(blogJSON)
 		{
-			if(err)
-				throw err;
-
 			var blogData = JSON.parse(blogJSON);
 			blogData.currentYear = (new Date()).getFullYear();
 
@@ -122,13 +110,10 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 			_getPosts(blogData, this);
 		},
-		function processPosts(err, posts)
+		function processPosts(posts)
 		{
-			if(err)
-				throw err;
-
 			var recentPosts = [];
-			for(var i=0,len=posts.length;i<5 && i<len;i++)
+			for(var i=0,len=posts.length;i<10 && i<len;i++)
 			{
 				recentPosts.push({href : posts[i].urlPath, title : posts[i].title});
 			}
@@ -147,52 +132,37 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 				dustData.post = post;
 				dustData.blog = blogData;
 
-				step(
+				tiptoe(
 					function createDirectory()
 					{
 						runUtils.run("mkdir", ["-p", postPath], this);
 					},
-					function renderPost(err)
+					function renderPost()
 					{
-						if(err)
-							throw err;
-
 						dustUtils.render(path.join(srcPath, "dust"), "single_post", dustData, this);
 					},
-					function savePost(err, postHTML)
+					function savePost(postHTML)
 					{
-						if(err)
-							throw err;
-
 						fs.writeFile(path.join(postPath, "index.html"), postHTML, "utf8", this);
 					},
 					function finish(err) { cb(err); }
 				);
 			}, this);
 		},
-		function generateAtomXML(err)
+		function generateAtomXML()
 		{
-			if(err)
-				throw err;
-
 			var dustData = {};
 			dustData.posts = this.posts;
 			dustData.blog = this.blogData;
 
 			dustUtils.render(path.join(srcPath, "dust"), "atom", dustData, this);
 		},
-		function saveAtomXML(err, atomXML)
+		function saveAtomXML(atomXML)
 		{
-			if(err)
-				throw err;
-
 			fs.writeFile(path.join(targetPath, "atom.xml"), atomXML, "utf8", this.parallel());
 		},
-		function generateIndexHTML(err)
+		function generateIndexHTML()
 		{
-			if(err)
-				throw err;
-
 			var dustData = {};
 			dustData.posts = this.posts.slice(0, 10);
 			dustData.blog = this.blogData;
@@ -201,18 +171,12 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 			dustUtils.render(path.join(srcPath, "dust"), "index", dustData, this);
 		},
-		function saveIndexHTML(err, indexHTML)
+		function saveIndexHTML(indexHTML)
 		{
-			if(err)
-				throw err;
-
 			fs.writeFile(path.join(targetPath, "index.html"), indexHTML, "utf8", this);
 		},
-		function generateArchivesHTML(err)
+		function generateArchivesHTML()
 		{
-			if(err)
-				throw err;
-
 			var dustData = {};
 			dustData.blog = this.blogData;
 
@@ -231,11 +195,8 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 			dustUtils.render(path.join(srcPath, "dust"), "archives", dustData, this);
 		},
-		function saveArchivesHTML(err, archivesHTML)
+		function saveArchivesHTML(archivesHTML)
 		{
-			if(err)
-				throw err;
-
 			fs.writeFile(path.join(targetPath, "blog", "archives", "index.html"), archivesHTML, "utf8", this);
 		},
 		function finish(err) { cb(err); }

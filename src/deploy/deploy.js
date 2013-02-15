@@ -1,7 +1,7 @@
 "use strict";
 
 var base = require("node-base"),
-	step = require("step"),
+	tiptoe = require("tiptoe"),
 	util = require("util"),
 	fs = require("fs"),
 	path = require("path"),
@@ -12,7 +12,7 @@ var base = require("node-base"),
 var basePath = path.join(__dirname, "../..");
 var srcPath = path.join(basePath, "pub");
 
-step(
+tiptoe(
 	function copyFiles()
 	{
 		runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "opal:/srv/cosmicrealms.com/"], this.parallel());
