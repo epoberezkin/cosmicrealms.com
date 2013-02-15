@@ -6,7 +6,6 @@ var base = require("node-base"),
 	fs = require("fs"),
 	path = require("path"),
 	dustUtils = require("node-utils").dust,
-	dateFormat = require("dateformat"),
 	runUtils = require("node-utils").run;
 
 var basePath = path.join(__dirname, "../..");

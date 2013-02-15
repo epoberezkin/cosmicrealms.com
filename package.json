@@ -12,6 +12,6 @@
 		"stylus"			: ">= 0.31.0",
 		"optimist"			: ">= 0.3.5",
 		"node-utils"		: "git://github.com/Sembiance/node-utils.git",
-		"dateformat"		: ">=1.0.4-1.2.3"
+		"moment"			: ">= 2.0.0"
 	}
 }

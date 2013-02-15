@@ -6,7 +6,7 @@ var base = require("node-base"),
 	fs = require("fs"),
 	path = require("path"),
 	dustUtils = require("node-utils").dust,
-	dateFormat = require("dateformat"),
+	moment = require("moment"),
 	runUtils = require("node-utils").run;
 
 module.exports = function(basePath, srcPath, targetPath, cb)
@@ -37,9 +37,9 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 				post.urlPath = "/blog/" + post.date.getFullYear() + "/" + month + "/" + day + "/" + postid;
 
-				post.dateHuman = dateFormat(post.date, "mmm dS, yyyy");
-				post.dateComputer = dateFormat(post.date, "isoDateTime");
-				post.dateShortHuman = dateFormat(post.date, "mmm dd");
+				post.dateHuman = moment(post.date).format("MMM Do, YYYY");
+				post.dateComputer = moment(post.date).format("YYYY-MM-DDTHH:mm:ss");
+				post.dateShortHuman = moment(post.date).format("MMM DD");
 				post.contentPath = path.join(srcPath, "posts", postid);
 				post.id = postid;
 				post.author = blogData.author;
@@ -122,7 +122,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 
 			var blogData = this.blogData;
 			blogData.recentPosts = recentPosts;
-			blogData.lastUpdated = dateFormat(posts[0].date, "isoDateTime");
+			blogData.lastUpdated = moment(posts[0].date).format("YYYY-MM-DDTHH:mm:ss");
 
 			posts.serialForEach(function(post, cb)
 			{
