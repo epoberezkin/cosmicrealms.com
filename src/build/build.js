@@ -1,6 +1,6 @@
 "use strict";
 
-var base = require("node-base"),
+var base = require("base"),
 	util = require("util"),
 	path = require("path");
 
@@ -18,15 +18,15 @@ function runNextTarget(err)
 {
     if(err)
     {
-        base.error("%R", "BUILD FAILURE".repeat(5, " "));
+        base.error("BUILD FAILURE".repeat(5, " "));
         base.error(err);
-        base.error("%R", "EXITING DUE TO BUILD FAILURE");
+        base.error("EXITING DUE TO BUILD FAILURE");
         process.exit(-1);
     }
 
     if(!targetNames.length)
     {
-        base.info("%G", "DONE. BUILD SUCCESSFUL!\n");
+        base.info("DONE. BUILD SUCCESSFUL!\n");
         process.exit(0);
     }
 
@@ -40,7 +40,7 @@ function runNextTarget(err)
     }
     else
     {
-        base.info("%G: %Y\n", "BUILDING", targetName);
+        base.info("BUILDING: %s\n", targetName);
         require("./targets/" + targetName)(basePath, srcPath, targetPath, runNextTarget);
     }
 }

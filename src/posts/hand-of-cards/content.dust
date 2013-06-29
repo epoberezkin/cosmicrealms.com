@@ -1,0 +1,344 @@
+<style>
+	.postContent .demo
+	{
+		position: relative;
+		background-color: #6395EC;
+		height: 700px;
+		overflow: hidden;
+		margin-bottom: 1.0em;
+	}
+
+	.postContent .demo .sourceCodeLink
+	{
+		position: absolute;
+		right: 0.5em;
+		bottom: 0.5em;
+	}
+
+	.postContent .demo input { padding: 1.0em; }
+	.postContent .demo img { position: absolute; }
+	.postContent .demo .sliders
+	{
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		background-color: rgba(0, 0, 0, 0.8);
+		border-radius: 0.4em;
+		padding: 0.2em;
+		color: #EEEEEE;
+		z-index: 10;
+	}
+
+	.postContent .demo .sliders tr td:first-child { text-align: right; }
+	.postContent .demo .sliders tr td:last-child > span:last-child { width: 3.0em; display: inline-block; }
+	.postContent .demo .buttonsContainer { position: absolute; top: 0; right: 0; }
+	.postContent .demo .leftLine { display: none; width: 3px; background-color: red; height: 2000px; position: absolute; top: 0; }
+	.postContent .demo .topLine { display: none; height: 3px; background-color: red; width: 2000px; position: absolute; left:0; }
+	.postContent .demo .bottomLine { display: none; height: 3px; background-color: red; width: 2000px; position: absolute; left:0;; }
+	.postContent .demo .rightLine { display: none; width: 3px; background-color: red; height: 2000px; position: absolute; top: 0; }
+	.postContent .demo .baseLine { display: block !important; background-color: yellow !important; z-index: 3; }
+</style>
+<p>About 2 weeks ago I launched my new web game <a target="_blank" href="http://worldofcardgames.com">World of Card Games</a></p>
+<p>I started working on it back in December 2011. I took a month off here and there, so it probably took about 10 months of actual full time work.</p>
+<p>One of the toughest problems I faced was getting a hand of cards to show up nicely fanned out in an arc. You know, like you would hold them real life.</p>
+<p>My knowledge of math is pretty limited and things like cosines and tangents are totally foreign to me.</p>
+<p>Thus, I spent many, many days on IRC and varous websites seeking assistance and learning.</p>
+<p>After a ton of work, I was finally able to get this demo coded correctly:</p>
+<div class="demo">
+	<div class="leftLine"></div>        
+	<div class="topLine"></div>
+	<div class="bottomLine"></div>
+	<div class="rightLine"></div>
+	<div class="sliders">
+		<table>
+			<tr><td>Number of Cards:</td><td><span class="numCards slider"></span><span class="numCardsValue">13</span></td></tr>
+			<tr><td>Card Spacing:</td><td><span class="cardSpacing slider"></span><span class="cardSpacingValue">0.20</span></td></tr>
+			<tr><td>Arc Radius:</td><td><span class="arcRadius slider"></span><span class="arcRadiusValue">400</span></td></tr>
+		</table>
+	</div>
+	<div class="buttonsContainer">
+		<input type="button" value="N">
+		<input type="button" value="W">
+		<input type="button" value="S">
+		<input type="button" value="E">
+	</div>
+	<a class="sourceCodeLink" target="_blank" href="http://jsfiddle.net/tyyvk/108/">view source code</a>
+</div>
+<script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<script>
+	var RENDER_OFFSET_X = 100;
+	var RENDER_OFFSET_Y = 130;
+
+	var CARD_URL = "http://staticworldofsolitaire.com/decks/paris/4/1s.png";
+	var CARD_WIDTH = 128;
+	var CARD_HEIGHT = 199;
+
+	// Number of cards to show
+	var NUM_CARDS = 13;
+
+	// How much to show between cards, expressed as percentage of textureWidth
+	var CARD_SPACING = 0.20;
+
+	// This is the radius of the circle under the fan of cards and thus controls the overall curvature of the fan. Small values means higher curvature
+	var ARC_RADIUS = 400;
+
+	var DIRECTION = "N";
+
+	function calculateCoords(numCards, arcRadius, cardWidth, cardHeight, direction, cardSpacing)
+	{
+		// The separation between the cards, in terms of rotation around the circle's origin
+		var anglePerCard = Math.radiansToDegrees(Math.atan(((cardWidth*cardSpacing)/arcRadius)));
+
+		var angleOffset = ({"N" : 270, "S" : 90, "E" : 0, "W" : 180})[direction];    
+		
+		var startAngle = angleOffset-0.5*anglePerCard*(numCards-1);
+			
+		var coords = [];
+		var i;
+		var minX = 99999;
+		var minY = 99999;
+		var maxX = -minX;
+		var maxY = -minY;
+		for(i=0;i<numCards;i++)
+		{
+			var degrees = startAngle + anglePerCard*i;
+			
+			var radians= Math.degreesToRadians(degrees);
+			var x = cardWidth / 2 + Math.cos(radians) * arcRadius;
+			var y = cardHeight / 2 + Math.sin(radians) * arcRadius;
+			
+			minX = Math.min(minX, x);
+			minY = Math.min(minY, y);
+			maxX = Math.max(maxX, x);
+			maxY = Math.max(maxY, y);
+			
+			coords.push({x:x, y:y, angle:degrees+90});
+		}
+		
+		var rotatedDimensions = Math.getRotatedDimensions(coords[0].angle, cardWidth, cardHeight);
+
+		var offsetX = 0;
+		var offsetY = 0;
+		
+		if(direction==="N")
+		{
+			offsetX = (minX*-1);
+			offsetX += ((rotatedDimensions[0]-cardWidth)/2);
+			
+			offsetY = (minY*-1);
+		}
+		else if(direction==="S")
+		{
+			offsetX = (minX*-1);
+			offsetX += ((rotatedDimensions[0]-cardWidth)/2);
+			
+			offsetY = ((minY+(maxY-minY))*-1);
+		}
+		else if(direction==="W")
+		{
+			offsetY = (minY*-1);
+			offsetY += ((rotatedDimensions[1]-cardHeight)/2);
+
+			offsetX = (minX*-1);
+			offsetX += (cardHeight-Math.rotatePointInBox(0, 0, 270, cardWidth, cardHeight)[1]);
+		}
+		else if(direction==="E")
+		{
+			offsetY = (minY*-1);
+			offsetY += ((rotatedDimensions[1]-cardHeight)/2);
+
+			offsetX = (arcRadius)*-1;
+			offsetX -= (cardHeight-Math.rotatePointInBox(0, 0, 270, cardWidth, cardHeight)[1]);
+			//offsetX -= ?????;    // HELP! Needs to line up with yellow line!
+		}
+		
+		coords.forEach(function(coord)
+		{
+			coord.x+=offsetX;
+			coord.x = Math.round(coord.x);
+			
+			coord.y+=offsetY;
+			coord.y = Math.round(coord.y);
+			
+			coord.angle = Math.round(coord.angle);
+		});
+		
+		return coords;
+	}
+
+	function calculateFullDimensions(cardWidth, cardHeight, coords)
+	{
+		var xCoords = coords.map(function(coord) { return coord.x; });
+		var maxX = Math.max.apply(Math, xCoords);
+		var minX = Math.min.apply(Math, xCoords);
+
+		var yCoords = coords.map(function(coord) { return coord.y; });
+		var maxY = Math.max.apply(Math, yCoords);
+		var minY = Math.min.apply(Math, yCoords);
+
+		var firstDimensions = Math.getRotatedDimensions(coords[0].angle, cardWidth, cardHeight);
+		var lastDimensions = Math.getRotatedDimensions(coords[coords.length-1].angle, cardWidth, cardHeight);
+		
+		var totalWidth = (maxX-minX);
+		totalWidth += cardWidth;
+		totalWidth += ((firstDimensions[0]-cardWidth)/2);
+		totalWidth += ((lastDimensions[0]-cardWidth)/2);
+
+		var totalHeight = (maxY-minY);
+		totalHeight += cardHeight;
+		totalHeight += ((firstDimensions[1]-cardHeight)/2);
+		
+		return [totalWidth, totalHeight];
+	}
+
+	// Math Additions
+	if(!Math.degreesToRadians)
+	{
+		Math.degreesToRadians = function(degrees)
+		{
+			return degrees * (Math.PI/180);
+		};
+	}
+
+	if(!Math.radiansToDegrees)
+	{
+		Math.radiansToDegrees = function(radians)
+		{
+			return radians * (180/Math.PI);
+		};
+	}
+
+	if(!Math.getRotatedDimensions)
+	{
+		Math.getRotatedDimensions = function(angle_in_degrees, width, height)
+		{
+			var angle = angle_in_degrees * Math.PI / 180,
+				sin   = Math.sin(angle),
+				cos   = Math.cos(angle);
+			var x1 = cos * width,
+				y1 = sin * width;
+			var x2 = -sin * height,
+				y2 = cos * height;
+			var x3 = cos * width - sin * height,
+				y3 = sin * width + cos * height;
+			var minX = Math.min(0, x1, x2, x3),
+				maxX = Math.max(0, x1, x2, x3),
+				minY = Math.min(0, y1, y2, y3),
+				maxY = Math.max(0, y1, y2, y3);
+
+			return [ Math.floor((maxX - minX)), Math.floor((maxY - minY)) ];
+		};
+	}
+
+	if(!Math.rotatePointInBox)
+	{
+		Math.rotatePointInBox = function(x, y, angle, width, height)
+		{
+			angle = Math.degreesToRadians(angle);
+
+			var centerX = width / 2.0;
+			var centerY = height / 2.0;
+			var dx = x - centerX;
+			var dy = y - centerY;
+			var dist = Math.sqrt(dx * dx + dy * dy);
+			var a =  Math.atan2(dy, dx) + angle;
+			var dx2 = Math.cos(a) * dist;
+			var dy2 = Math.sin(a) * dist;
+
+			return [ dx2 + centerX, dy2 + centerY ];
+		};
+	}
+
+	// drawCard function (originX/originY are optional)
+	function drawCard(Y, x, y, rotationAngle, originX, originY)
+	{
+		var img = document.createElement("img");
+		img.className = "card";
+		img.src = CARD_URL;
+		img.style.left = x + "px";
+		img.style.top = y + "px";
+		
+		var prefixes = [ "Webkit", "Moz", "O", "ms" ];
+		prefixes.forEach(function(prefix)
+		{
+			img.style[prefix + "Transform"] = "rotate(" + rotationAngle + "deg)";
+			if(typeof originX!=="undefined" && typeof originY!=="undefined")
+				img.style[prefix + "TransformOrigin"] = originX + "px " + originY + "px";
+		});
+		
+		Y.one(".postContent .demo").append(img);
+	}
+
+	YUI({debug:true}).use("node", "slider", function (Y)
+	{
+		Y.one(document.body).addClass("yui3-skin-sam");
+
+		function clearCards() { Y.all(".postContent .demo img.card").remove(true); }
+		function setDirection(direction)
+		{
+			Y.one(".postContent .demo ." + ({"N" : "top", "S" : "bottom", "E" : "right", "W" : "left"})[DIRECTION] + "Line").removeClass("baseLine");
+			Y.one(".postContent .demo ." + ({"N" : "left", "S" : "left", "E" : "top", "W" : "top"})[DIRECTION] + "Line").removeClass("baseLine");
+			DIRECTION = direction;
+			Y.one(".postContent .demo ." + ({"N" : "top", "S" : "bottom", "E" : "right", "W" : "left"})[DIRECTION] + "Line").addClass("baseLine");
+			Y.one(".postContent .demo ." + ({"N" : "left", "S" : "left", "E" : "top", "W" : "top"})[DIRECTION] + "Line").addClass("baseLine");
+		}
+		
+		function drawCards()
+		{
+			clearCards();
+			
+			var coords = calculateCoords(NUM_CARDS, ARC_RADIUS, CARD_WIDTH, CARD_HEIGHT, DIRECTION, CARD_SPACING);
+			coords.forEach(function(coord)
+			{
+				drawCard(Y, coord.x+RENDER_OFFSET_X, coord.y+RENDER_OFFSET_Y, Math.round(coord.angle));
+			});
+		}
+		
+		Y.one(".postContent .demo .leftLine").setStyle("left", RENDER_OFFSET_X + "px");
+		Y.one(".postContent .demo .topLine").setStyle("top", RENDER_OFFSET_Y + "px");
+		Y.one(".postContent .demo .bottomLine").setStyle("top", RENDER_OFFSET_Y+CARD_HEIGHT + "px");
+		Y.one(".postContent .demo .rightLine").setStyle("left", RENDER_OFFSET_X+CARD_HEIGHT + "px");
+		
+		Y.all(".postContent .demo input[type='button']").on("click", function(e)
+		{
+			setDirection(e.currentTarget.get("value"));
+			drawCards();
+		});
+			
+		var numCardsSlider = new Y.Slider({min : 1, max : 100, value : NUM_CARDS});
+		numCardsSlider.render(".postContent .demo .numCards");
+		numCardsSlider.on("valueChange", function(e)
+		{
+			NUM_CARDS = e.newVal;
+			Y.one(".postContent .demo .numCardsValue").setContent(NUM_CARDS);
+			drawCards();
+		});
+		
+		var cardSpacingSlider = new Y.Slider({min : 1, max : 100, value : 20});
+		cardSpacingSlider.render(".postContent .demo .cardSpacing");
+		cardSpacingSlider.on("valueChange", function(e)
+		{
+			CARD_SPACING = e.newVal/100;
+			Y.one(".postContent .demo .cardSpacingValue").setContent(CARD_SPACING);
+			drawCards();
+		});
+		
+		var arcRadiusSlider = new Y.Slider({min : 1, max : 1000, value : ARC_RADIUS});
+		arcRadiusSlider.render(".postContent .demo .arcRadius");
+		arcRadiusSlider.on("valueChange", function(e)
+		{
+			ARC_RADIUS = e.newVal;
+			Y.one(".postContent .demo .arcRadiusValue").setContent(ARC_RADIUS);
+			drawCards();
+		});
+		
+		setDirection(DIRECTION);
+		drawCards();
+	});
+</script>
+<p>Notice how the cards stick to the base lines, regardless of how you adjust the sliders or which direction the cards are facing (NWSE buttons at top right).</p>
+<p>This "stay in place" concept was critical. Without that it would have been quite difficult to implement into the game.</p>
+<p>I'd like to say I learned a lot, but that would be dishonest. I still don't really understand the mathmatical concepts in use here well enough to know when or how to apply them to future problems.</p>
+<p>My next game will likely be WebGL based. While the game itself will be mostly 2D, I'm almost certainly going to need to learn a lot more math in order to do the things I want to do.</p>
+<p>I am actually looking forward to it though. I've always liked math and I enjoy learning, so it should be fun.</p>
+<p>I want to thank the folks in #math on <a target="_blank" href="http://freenode.net">irc.freenode.net</a> and <a target="_blank" href="http://gamedev.stackexchange.com/users/11686/david-gouveia">David Gouveia</a> for all their help.</p>

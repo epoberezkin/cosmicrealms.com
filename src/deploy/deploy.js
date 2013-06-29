@@ -1,6 +1,6 @@
 "use strict";
 
-var base = require("node-base"),
+var base = require("base"),
 	tiptoe = require("tiptoe"),
 	util = require("util"),
 	fs = require("fs"),

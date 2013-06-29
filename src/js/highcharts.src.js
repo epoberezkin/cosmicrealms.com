@@ -1,1 +1,1 @@
-/mnt/compendium/DevLab/common/lib/highcharts/js/highcharts.src.js
+/mnt/compendium/DevLab/common/lib/js/highcharts/js/highcharts.src.js
