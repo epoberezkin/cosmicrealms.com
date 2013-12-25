@@ -3,9 +3,10 @@
 		<h1>My Websites</h1>
 		<ul>
 			<li><a href="http://worldofsolitaire.com">World of Solitaire</a></li>
-			<li><a href="http://worldofcardgames.com">World of Card Games</a></li>
 			<li><a href="http://mtgjson.com">MTG JSON</a></li>
+			<li><a href="http://mtgimage.com">MTG Image</a></li>
 			<li><a href="https://github.com/Sembiance/">My Github Profile</a></li>
+			<li><a href="http://worldofcardgames.com">World of Card Games</a></li>
 		</ul>
 	</section>
 	<section class="even">

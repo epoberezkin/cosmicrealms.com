@@ -1,10 +1,12 @@
 "use strict";
 
-var base = require("base"),
+var base = require("xbase"),
 	tiptoe = require("tiptoe"),
 	util = require("util"),
 	path = require("path"),
-	runUtils = require("node-utils").run;
+	runUtil = require("xutil").run;
+
+var runOptions = {"redirect-stderr" : false};
 
 module.exports = function(basePath, srcPath, targetPath, cb)
 {
@@ -13,12 +15,12 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 	tiptoe(
 		function makeDirectories()
 		{
-			runUtils.run("mkdir", ["-p", path.join(targetPath, "css")], this);
+			runUtil.run("mkdir", ["-p", path.join(targetPath, "css")], runOptions, this);
 		},
 		function copyFiles()
 		{
-			runUtils.run("rsync", ["-avL", path.join(srcPath, "css"), targetPath], this.parallel());
-			runUtils.run(stylusBin, ["-o", path.join(targetPath, "css"), path.join(srcPath, "styl", "style.styl")], this.parallel());
+			runUtil.run("rsync", ["-avL", path.join(srcPath, "css"), targetPath], runOptions, this.parallel());
+			runUtil.run(stylusBin, ["-o", path.join(targetPath, "css"), path.join(srcPath, "styl", "style.styl")], runOptions, this.parallel());
 		},
 		function finish(err) { cb(err); }
 	);

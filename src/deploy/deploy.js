@@ -1,12 +1,12 @@
 "use strict";
 
-var base = require("base"),
+var base = require("xbase"),
 	tiptoe = require("tiptoe"),
 	util = require("util"),
 	fs = require("fs"),
 	path = require("path"),
-	dustUtils = require("node-utils").dust,
-	runUtils = require("node-utils").run;
+	dustUtils = require("xutil").dust,
+	runUtil = require("xutil").run;
 
 var basePath = path.join(__dirname, "../..");
 var srcPath = path.join(basePath, "pub");
@@ -14,8 +14,8 @@ var srcPath = path.join(basePath, "pub");
 tiptoe(
 	function copyFiles()
 	{
-		runUtils.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "opal:/srv/cosmicrealms.com/"], this.parallel());
-		runUtils.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "opal:/srv/"], this.parallel());
+		runUtil.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "opal:/srv/cosmicrealms.com/"], {"redirect-stderr" : false}, this.parallel());
+		runUtil.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "opal:/srv/"], {"redirect-stderr" : false}, this.parallel());
 	},
 	function finish(err)
 	{

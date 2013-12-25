@@ -1,13 +1,16 @@
 "use strict";
 
-var base = require("base"),
+var base = require("xbase"),
 	tiptoe = require("tiptoe"),
 	util = require("util"),
 	fs = require("fs"),
 	path = require("path"),
-	dustUtils = require("node-utils").dust,
+	dustUtils = require("xutil").dust,
 	moment = require("moment"),
-	runUtils = require("node-utils").run;
+	runUtil = require("xutil").run;
+
+var runOptions = {"redirect-stderr" : false};
+var NUM_RECENT_POSTS = 4;
 
 module.exports = function(basePath, srcPath, targetPath, cb)
 {
@@ -94,8 +97,8 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 	tiptoe(
 		function createBlogDirectories()
 		{
-			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog")], this.parallel());
-			runUtils.run("mkdir", ["-p", path.join(targetPath, "blog", "archives")], this.parallel());
+			runUtil.run("mkdir", ["-p", path.join(targetPath, "blog")], runOptions, this.parallel());
+			runUtil.run("mkdir", ["-p", path.join(targetPath, "blog", "archives")], runOptions, this.parallel());
 		},
 		function getBlogJSON()
 		{
@@ -113,7 +116,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 		function processPosts(posts)
 		{
 			var recentPosts = [];
-			for(var i=0,len=posts.length;i<10 && i<len;i++)
+			for(var i=0,len=posts.length;i<NUM_RECENT_POSTS && i<len;i++)
 			{
 				recentPosts.push({href : posts[i].urlPath, title : posts[i].title});
 			}
@@ -135,7 +138,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 				tiptoe(
 					function createDirectory()
 					{
-						runUtils.run("mkdir", ["-p", postPath], this);
+						runUtil.run("mkdir", ["-p", postPath], runOptions, this);
 					},
 					function renderPost()
 					{
@@ -164,7 +167,7 @@ module.exports = function(basePath, srcPath, targetPath, cb)
 		function generateIndexHTML()
 		{
 			var dustData = {};
-			dustData.posts = this.posts.slice(0, 10);
+			dustData.posts = this.posts.slice(0, NUM_RECENT_POSTS);
 			dustData.blog = this.blogData;
 			if(this.posts.length>1)
 				dustData.hasMorePosts = true;
