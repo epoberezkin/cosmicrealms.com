@@ -1,0 +1,66 @@
+<p>Below are benchmark results for several node.js JSON validation modules.</p>
+<p>This is an update to a <a href="http://cosmicrealms.com/blog/2012/01/13/benchmark-of-node-dot-js-json-validation-modules/">post</a> I made 2 years ago.</p>
+<p style="margin-bottom: 0;">The following modules are benchmarked:</p>
+<ul>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">amanda 0.4.7</span><a href="https://github.com/Baggz/Amanda">https://github.com/Baggz/Amanda</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">jayschema 0.2.3</span><a href="https://github.com/natesilva/jayschema">https://github.com/natesilva/jayschema</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">joi 2.5.0</span><a href="https://github.com/spumko/joi">https://github.com/spumko/joi</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">json-gate 0.8.21</span><a href="https://github.com/oferei/json-gate">https://github.com/oferei/json-gate</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">json-schema 0.2.2</span><a href="https://github.com/kriszyp/json-schema">https://github.com/kriszyp/json-schema</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">JSV 4.0.2</span><a href="https://github.com/garycourt/JSV">https://github.com/garycourt/JSV</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">schema 0.2.1</span><a href="https://github.com/akidee/schema.js">https://github.com/akidee/schema.js</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">tv4 1.0.12</span><a href="https://github.com/geraintluff/tv4">https://github.com/geraintluff/tv4</a></li>
+	<li><span style="font-weight: bold; width: 10.0em; display: inline-block;">z-schema 2.4.3</span><a href="https://github.com/zaggino/z-schema">https://github.com/zaggino/z-schema</a></li>
+</ul>
+<p>All modules validate with the JSON schema described here: <a href="http://json-schema.org/">http://json-schema.org/</a> except for joi which uses a custom schema.</p>
+<p>I used the latest schema version supported by each module. This is noted as (v2) (v3) or (v4).</p>
+<h3>Results</h3>
+<div id="results"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "results",
+					defaultSeriesType : "column",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { useHTML : true, margin: 30, text : "20,000 Iterations<br>(smaller is better)" },
+				xAxis : { categories : [ "amanda (v3)", "jayschema (4v)", "joi (custom)", "json-gate (v3)", "json-schema (v3)", "JSV (v3)", "schema (v2)", "tv4 (v4)", "z-schema (v4)" ] },
+				yAxis : { title : { text : "Time Per Iteration" } },
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.x + "</b><br/>" + "Time Per Iteration: " + this.y + "ms";
+					}
+				},
+				series :
+				[{
+					data : [ 1.60, 5.02, 1.01, 0.07, 0.07, 1.64, 0.07, 0.04, 0.16 ],
+					dataLabels : 
+					{
+						enabled : true,
+						formatter : function()
+						{
+							return this.y + "ms";
+						},
+						style : { fontWeight : "bold" }
+					}
+				}]
+			});
+	});
+</script>
+<br>
+<br>
+<h3>Conclusion</h3>
+<p>tv4 appears to be the fastest, but it only supports the very latest v4 <a href="http://json-schema.org/">JSON schema</a> version. So if you have older schema documents, you'll need to go with one of the others.</p>
+<p>Jayschema takes the 'slowest validator' crown away from JSV. I'd avoid using it if performance matters to your application.</p>
+<p>It should be noted that joi doesn't support the <a href="http://json-schema.org/">JSON schema</a> specification. Joi uses a custom schema which does not support checking for unique array items or evenly divisible numbers.</p>
+<p>Lastly, amanda only supports async validation and so that test includes some additional overhead in dealing with callbacks.</p>
+<h3>Source Code</h3>
+<p>Full source code for all the tests can be found here: <a href="https://github.com/Sembiance/cosmicrealms.com/tree/master/sandbox/benchmark-of-node-dot-js-json-validation-modules-part-2">https://github.com/Sembiance/cosmicrealms.com/tree/master/sandbox/benchmark-of-node-dot-js-json-validation-modules-part-2</a></p>
+
