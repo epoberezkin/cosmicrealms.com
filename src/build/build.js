@@ -8,7 +8,7 @@ var basePath = path.join(__dirname, "../..");
 var srcPath = path.join(basePath, "src");
 var targetPath = path.join(basePath, "pub");
 
-var TARGET_NAMES = ["root", "cursors", "images", "css", "js", "posts"];
+var TARGET_NAMES = ["root", "legacy", "cursors", "images", "css", "js", "posts"];
 var targetNames = TARGET_NAMES.slice();
 
 if(process.argv.length>2)

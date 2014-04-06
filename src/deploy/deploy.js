@@ -14,8 +14,8 @@ var srcPath = path.join(basePath, "pub");
 tiptoe(
 	function copyFiles()
 	{
-		runUtil.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "opal:/srv/cosmicrealms.com/"], {"redirect-stderr" : false}, this.parallel());
-		runUtil.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "opal:/srv/"], {"redirect-stderr" : false}, this.parallel());
+		runUtil.run("rsync", ["--delete", "-avL", path.join(srcPath, "/"), "sandbox:/srv/cosmicrealms.com/"], {"redirect-stderr" : false}, this.parallel());
+		runUtil.run("scp", [path.join(basePath, "nginx", "cosmicrealms.com.conf"), "sandbox:/srv/"], {"redirect-stderr" : false}, this.parallel());
 	},
 	function finish(err)
 	{

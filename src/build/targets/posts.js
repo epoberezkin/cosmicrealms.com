@@ -10,7 +10,7 @@ var base = require("xbase"),
 	runUtil = require("xutil").run;
 
 var runOptions = {"redirect-stderr" : false};
-var NUM_RECENT_POSTS = 4;
+var NUM_RECENT_POSTS = 3;
 
 module.exports = function(basePath, srcPath, targetPath, cb)
 {
