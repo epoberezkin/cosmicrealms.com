@@ -1,0 +1,109 @@
+<p>Below are benchmark results for several node.js JSON validation modules.</p>
+<p>This is an update to a <a href="http://cosmicrealms.com/blog/2014/02/07/benchmark-of-node-dot-js-json-validation-modules-part-2/">post</a> I made 6 months ago.</p>
+<p style="margin-bottom: 0;">The following modules are benchmarked:</p>
+<ul>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">is-my-json-valid 1.3.7</span><a href="https://github.com/mafintosh/is-my-json-valid">https://github.com/mafintosh/is-my-json-valid</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">amanda 0.5.1</span><a href="https://github.com/apiaryio/Amanda">https://github.com/apiaryio/Amanda</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">jayschema 0.2.8</span><a href="https://github.com/natesilva/jayschema">https://github.com/natesilva/jayschema</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">json-gate 0.8.21</span><a href="https://github.com/oferei/json-gate">https://github.com/oferei/json-gate</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">json-schema 0.2.2</span><a href="https://github.com/kriszyp/json-schema">https://github.com/kriszyp/json-schema</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">JSV 4.0.2</span><a href="https://github.com/garycourt/JSV">https://github.com/garycourt/JSV</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">schema 0.2.1</span><a href="https://github.com/akidee/schema.js">https://github.com/akidee/schema.js</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">tv4 1.1.0</span><a href="https://github.com/geraintluff/tv4">https://github.com/geraintluff/tv4</a></li>
+	<li><span style="font-weight: bold; width: 12.0em; display: inline-block;">z-schema 3.0.0</span><a href="https://github.com/zaggino/z-schema">https://github.com/zaggino/z-schema</a></li>
+</ul>
+<p>All modules validate with the JSON schema described here: <a href="http://json-schema.org/">http://json-schema.org/</a></p>
+<p>I used the latest schema version supported by each module. This is noted as (v2) (v3) or (v4).</p>
+<p>20,000 valid and 20,000 invalid JSON objects were pre-generated with random data. Each validator module was tested against the same randomized objects.</p> 
+<h3>Results - Valid Objects</h3>
+<div id="resultsValid"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "resultsValid",
+					defaultSeriesType : "column",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { useHTML : true, margin: 30, text : "<center>20,000 Iterations<br>Valid Objects<br>(smaller is better)</center>" },
+				xAxis : { categories : [ "is-my-json-valid (v4)", "tv4 (v4)", "json-schema (v3)", "schema (v2)", "z-schema (v4)", "json-gate (v3)", "JSV (v3)", "amanda (v4)", "jayschema (4v)" ] },
+				yAxis : { title : { text : "Time Per Iteration (ms)" } },
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.x + "</b><br/>" + "Time Per Iteration: " + this.y + "ms";
+					}
+				},
+				series :
+				[{
+					data : [ 0.03, 0.10, 0.13, 0.15, 0.17, 0.38, 2.57, 4.28, 9.47 ],
+					dataLabels : 
+					{
+						enabled : true,
+						formatter : function()
+						{
+							return this.y + "ms";
+						},
+						style : { fontWeight : "bold" }
+					}
+				}]
+			});
+	});
+</script>
+<br>
+<br>
+<h3>Results - Invalid Objects</h3>
+<div id="resultsInvalid"></div>
+<script>
+	$(document).ready(function() {
+		new Highcharts.Chart(
+			{
+				chart :
+				{
+					renderTo : "resultsInvalid",
+					defaultSeriesType : "column",
+					backgroundColor : "transparent"
+				},
+				credits : { enabled : false },
+				title : { useHTML : true, margin: 30, text : "<center>20,000 Iterations<br>Invalid Objects<br>(smaller is better)</center>" },
+				xAxis : { categories : [ "is-my-json-valid (v4)", "json-gate (v3)", "z-schema (v4)", "json-schema (v3)", "schema (v2)", "tv4 (v4)", "JSV (v3)", "amanda (v4)", "jayschema (4v)" ] },
+				yAxis : { title : { text : "Time Per Iteration (ms)" } },
+				legend : { enabled : false },
+				tooltip :
+				{
+					formatter : function()
+					{
+						return "<b>" + this.x + "</b><br/>" + "Time Per Iteration: " + this.y + "ms";
+					}
+				},
+				series :
+				[{
+					data : [ 0.01, 0.01, 0.06, 0.08, 0.21, 0.24, 1.27, 1.41, 4.56 ],
+					dataLabels : 
+					{
+						enabled : true,
+						formatter : function()
+						{
+							return this.y + "ms";
+						},
+						style : { fontWeight : "bold" }
+					}
+				}]
+			});
+	});
+</script>
+<br>
+<br>
+<h3>Conclusion</h3>
+<p>is-my-json-valid is the fastest validator for both valid and invalid objects.</p>
+<p>It's so fast I had to make sure it was actually doing anything at all. Amazingly fast!</p>
+<p>tv4 is still plenty fast validating valid objects but is a bit slow dealing with invalid ones.</p>
+<p>Jayschema remains the slowest validator.</p>
+<p>Lastly, a reminder, amanda only supports async validation and so that test includes some additional overhead in dealing with callbacks.</p>
+<h3>Source Code</h3>
+<p>Full source code for all the tests can be found here: <a href="https://github.com/Sembiance/cosmicrealms.com/tree/master/sandbox/benchmark-of-node-dot-js-json-validation-modules-part-3">https://github.com/Sembiance/cosmicrealms.com/tree/master/sandbox/benchmark-of-node-dot-js-json-validation-modules-part-3</a></p>

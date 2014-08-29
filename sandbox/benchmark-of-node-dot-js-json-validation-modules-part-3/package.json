@@ -1,0 +1,23 @@
+{
+	"name"					: "benchmark-of-node-dot-js-json-validation-modules-part-3",
+	"version"				: "0.0.1",
+	"author"				: "Robert Schultz <robert@telparia.com>",
+	"description"			: "source code for blog post: http://cosmicrealms.com/blog/2014/02/07/benchmark-of-node-dot-js-json-validation-modules-part-3",
+	"private"				: true,
+	"dependencies"			:
+	{
+		"amanda"			: "0.5.1",
+		"jayschema"			: "0.2.8",
+		"json-gate"			: "0.8.21",
+		"json-schema"		: "0.2.2",
+		"schema"			: "0.2.1",
+		"tv4"				: "1.1.0",
+		"z-schema"			: "3.0.0",
+		"is-my-json-valid"	: "1.3.7",
+		"JSV"				: "4.0.2",
+		"tiptoe"			: ">= 1.0.0",
+		"xbase"				: "git://github.com/Sembiance/xbase.git",
+		"xutil"				: "git://github.com/Sembiance/xutil.git",
+		"rand48"			: ">= 1.0.0"
+	}
+}
