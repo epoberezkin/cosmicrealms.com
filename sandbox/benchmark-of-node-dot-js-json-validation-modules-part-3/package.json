@@ -7,17 +7,18 @@
 	"dependencies"			:
 	{
 		"amanda"			: "0.5.1",
-		"jayschema"			: "0.2.8",
+		"jayschema"			: "0.3.1",
 		"json-gate"			: "0.8.21",
 		"json-schema"		: "0.2.2",
 		"schema"			: "0.2.1",
-		"tv4"				: "1.1.0",
-		"z-schema"			: "3.0.0",
-		"is-my-json-valid"	: "1.3.7",
+		"tv4"				: "1.1.5",
+		"z-schema"			: "3.2.0",
+		"is-my-json-valid"	: "1.4.0",
 		"JSV"				: "4.0.2",
 		"tiptoe"			: ">= 1.0.0",
 		"xbase"				: "git://github.com/Sembiance/xbase.git",
 		"xutil"				: "git://github.com/Sembiance/xutil.git",
-		"rand48"			: ">= 1.0.0"
+		"rand48"			: ">= 1.0.0",
+		"revalidator"       : "0.3.1"
 	}
 }

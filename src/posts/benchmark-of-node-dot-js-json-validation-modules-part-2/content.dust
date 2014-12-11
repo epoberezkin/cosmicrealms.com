@@ -1,3 +1,7 @@
+<h2 style="text-decoration: underline;">2014 UPDATE</h2>
+<p>I have updated this post here: <a href="http://cosmicrealms.com/blog/2014/08/29/benchmark-of-node-dot-js-json-validation-modules-part-3/">Benchmark of node.js JSON Validation Modules Part 3</a></p>
+<br>
+<h3>Old Post</h3>
 <p>Below are benchmark results for several node.js JSON validation modules.</p>
 <p>This is an update to a <a href="http://cosmicrealms.com/blog/2012/01/13/benchmark-of-node-dot-js-json-validation-modules/">post</a> I made 2 years ago.</p>
 <p style="margin-bottom: 0;">The following modules are benchmarked:</p>
