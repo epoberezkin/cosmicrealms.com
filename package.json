@@ -9,8 +9,8 @@
 		"accounting"		: ">= 0.3.0",
 		"tiptoe"			: ">= 1.0.0",
 		"stylus"			: ">= 0.31.0",
-		"xutil"				: ">= 1.0.0",
-		"xbase"				: ">= 1.0.0",
+		"xutil"				: "git://github.com/Sembiance/xutil.git",
+		"xbase"				: "git://github.com/Sembiance/xbase.git",
 		"moment"			: ">= 2.0.0"
 	}
 }
