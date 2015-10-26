@@ -68,10 +68,10 @@ exports.schema4 =
 		dozen                           : { type : "integer", minimum : 12, maximum : 12 },
 		dozenOrBakersDozen              : { type : "integer", minimum : 12, maximum : 13 },
 		favoriteEvenNumber              : { type : "integer", multipleOf : 2 },
-		topThreeFavoriteColors          : { type : "array", minItems : 3, maxItems : 3, uniqueItems : true, items : { type : "string" }},
-		favoriteSingleDigitWholeNumbers : { type : "array", minItems : 1, maxItems : 10, uniqueItems : true, items : { type : "integer", minimum : 0, maximum : 9 }},
+		topThreeFavoriteColors          : { type : "array", minItems : 3, maxItems : 3, items : { type : "string" }},
+		favoriteSingleDigitWholeNumbers : { type : "array", minItems : 1, maxItems : 10, items : { type : "integer", minimum : 0, maximum : 9 }},
 		favoriteFiveLetterWord          : { type : "string", minLength : 5, maxLength : 5 },
-		emailAddresses                  : { type : "array", minItems : 1, uniqueItems : true, items : { type : "string", format : "email" }},
-		ipAddresses                     : { type : "array", uniqueItems : true, items : { type : "string", format : "ipv4" }},
+		emailAddresses                  : { type : "array", minItems : 1, items : { type : "string", format : "email" }},
+		ipAddresses                     : { type : "array", items : { type : "string", format : "ipv4" }},
 	}
 };

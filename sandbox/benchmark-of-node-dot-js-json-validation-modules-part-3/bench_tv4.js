@@ -3,7 +3,10 @@
 var generate = require("./generate.js"),
 	test_schema = require("./test_schema"),
 	tv4 = require("tv4"),
+	tv4_formats = require("tv4-formats"),
 	assert = require("assert");
+
+tv4.addFormat(tv4_formats);
 
 var i=0, max=20000, start, end;
 var valids = generate.valid(max);
